@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Link from 'redux-first-router-link';
 
 class SearchForm extends React.Component {
     constructor(props) {
@@ -33,12 +34,13 @@ function Search({ onSearch, results = [] }) {
         <h1>Search</h1>
         <SearchForm onSearch={onSearch} />
         <div>
-            {results.map(({Title,Poster,imdbID})=> <img src={Poster} alt={Title} key={imdbID} />)}
+            {results.map(({Title,Poster,imdbID})=> 
+            <Link to={`/movie/${imdbID}`} key={imdbID}><img src={Poster} alt={Title} /></Link>)}
         </div>
     </div>;
 }
 
-export const ConnectedSearch = connect(
+const ConnectedSearch = connect(
     function mapStateToProps(state) {
         return state.search;
     }, 
@@ -55,14 +57,20 @@ export const ConnectedSearch = connect(
     }
 )(Search);
 
-export function searchReducer(state = {results: []}, action) {
-    switch (action.type) {
-        case "SEARCH_FULFILLED":
-            return Object.assign(
-                {}, 
-                { results: action.payload.Response 
-                        ? action.payload.Search.filter(({Poster}) => Poster !== "N/A") 
-                        : []});
-        default: return state;
+export const routeComponentMap = {
+    HOME: ConnectedSearch
+};
+
+export const searchReducer = { 
+    search: function (state = {results: []}, action) {
+        switch (action.type) {
+            case "SEARCH_FULFILLED":
+                return Object.assign(
+                    {}, 
+                    { results: action.payload.Response 
+                            ? action.payload.Search.filter(({Poster}) => Poster !== "N/A") 
+                            : []});
+            default: return state;
+        }
     }
 }

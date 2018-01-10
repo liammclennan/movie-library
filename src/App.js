@@ -1,20 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import './App.css';
-import { ConnectedSearch } from './Search';
+import { routeComponentMap as searchRouteMap } from './Search';
+import { routeComponentMap as movieRouteMap } from './Movie';
+import Link from 'redux-first-router-link';
 
-function App({type}) {
-    const componentMap = {
-      HOME: ConnectedSearch
-    };
-    const View = componentMap[type];
+function App(location) {
+    const componentMap = Object.assign({}, movieRouteMap, searchRouteMap);
+    const View = componentMap[location.type];
 
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Movie Library</h1>
+          <Link to="/"><h1 className="App-title">Movie Library</h1></Link>
         </header>
-        <View />
+        <View location={location}/>
       </div>
     );
 }

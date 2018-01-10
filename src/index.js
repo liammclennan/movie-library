@@ -9,17 +9,20 @@ import createHistory from 'history/createBrowserHistory';
 import promiseMiddleware from 'redux-promise-middleware';
 import App from './App';
 import {searchReducer} from './Search';
+import {movieReducer, movieRouteConfig} from './Movie';
 
 const routesMap = { 
-  HOME: '/'
+    HOME: '/',
+    MOVIE: movieRouteConfig
 };
 
 const { reducer, middleware, enhancer } = connectRoutes(createHistory(), routesMap)
 
-const store = createStore(combineReducers({
-    location: reducer,
-    search: searchReducer
-}), compose(enhancer, applyMiddleware(middleware, promiseMiddleware()),
+const store = createStore(combineReducers(Object.assign(
+        { location: reducer }, 
+        searchReducer, 
+        movieReducer)), 
+    compose(enhancer, applyMiddleware(middleware, promiseMiddleware()),
 window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()));
 
 ReactDOM.render(
