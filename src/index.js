@@ -2,21 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
+import { connectRoutes } from 'redux-first-router';
+import createHistory from 'history/createBrowserHistory';
+import promiseMiddleware from 'redux-promise-middleware';
 import App from './App';
 import {searchReducer} from './Search';
 
-function routingReducer(state = { }, action) {
-    switch (action.type) {
-        default: return state;
-    }
-}
+const routesMap = { 
+  HOME: '/'
+};
+
+const { reducer, middleware, enhancer } = connectRoutes(createHistory(), routesMap)
+
 const store = createStore(combineReducers({
-    routing: routingReducer,
+    location: reducer,
     search: searchReducer
-}),
-window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+}), compose(enhancer, applyMiddleware(middleware, promiseMiddleware()),
+window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()));
 
 ReactDOM.render(
     <Provider store={store}>

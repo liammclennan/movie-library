@@ -19,31 +19,50 @@ class SearchForm extends React.Component {
     }
 
     render() {
-        return <form onSubmit={this.search}>
+        return <div><form onSubmit={this.search}>
             <label htmlFor="title">Title: </label>
             <input type="text" name="title" value={this.state.title} onChange={this.titleChange}/>
-        </form>;
+            <input type="submit" value="Search"/>
+        </form>
+        </div>;
     }
 }
 
-function Search({ onSearch }) {
+function Search({ onSearch, results = [] }) {
     return <div>
         <h1>Search</h1>
         <SearchForm onSearch={onSearch} />
+        <div>
+            {results.map(({Title,Poster,imdbID})=> <img src={Poster} alt={Title} key={imdbID} />)}
+        </div>
     </div>;
 }
 
 export const ConnectedSearch = connect(
     function mapStateToProps(state) {
-        return state;
+        return state.search;
     }, 
     function mapDispatchToProps(dispatch) {
         return {
-            onSearch: (title)=> { dispatch({type: "SEARCH", title}); }
+            onSearch: (title)=> {
+                dispatch({
+                    type: 'SEARCH',
+                    payload: fetch(`http://www.omdbapi.com/?apikey=8e4dcdac&s=${encodeURIComponent(title)}`)
+                            .then((response) => response.json())
+                  });
+            }
         };
     }
 )(Search);
 
-export function searchReducer(state = {}, action) {
-    return state;
+export function searchReducer(state = {results: []}, action) {
+    switch (action.type) {
+        case "SEARCH_FULFILLED":
+            return Object.assign(
+                {}, 
+                { results: action.payload.Response 
+                        ? action.payload.Search.filter(({Poster}) => Poster !== "N/A") 
+                        : []});
+        default: return state;
+    }
 }
