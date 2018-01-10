@@ -26,10 +26,10 @@ class SearchForm extends React.Component {
     }
 }
 
-function Search() {
+function Search({ onSearch }) {
     return <div>
         <h1>Search</h1>
-        <SearchForm />
+        <SearchForm onSearch={onSearch} />
     </div>;
 }
 
