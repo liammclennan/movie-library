@@ -8,12 +8,13 @@ import { connectRoutes } from 'redux-first-router';
 import createHistory from 'history/createBrowserHistory';
 import promiseMiddleware from 'redux-promise-middleware';
 import App from './App';
-import {searchReducer} from './Search';
+import {searchReducer, searchRouteConfig} from './Search';
 import {movieReducer, movieRouteConfig} from './Movie';
 
 const routesMap = { 
     HOME: '/',
-    MOVIE: movieRouteConfig
+    MOVIE: movieRouteConfig,
+    SEARCH: searchRouteConfig
 };
 
 const { reducer, middleware, enhancer } = connectRoutes(createHistory(), routesMap)

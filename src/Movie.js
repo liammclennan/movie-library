@@ -30,7 +30,6 @@ const defaultState = {movie: null};
 
 export const movieReducer = {
     movie: function (state = defaultState, action) {
-        console.log(action);
         switch (action.type) {
             case "MOVIE_CLEAR": 
                 return Object.assign({}, state, defaultState);
@@ -51,3 +50,4 @@ export const movieRouteConfig = {
         dispatch({ type: "MOVIE_FETCHED", movie });
     }
 };
+

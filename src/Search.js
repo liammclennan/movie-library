@@ -35,7 +35,9 @@ function Search({ onSearch, results = [] }) {
         <SearchForm onSearch={onSearch} />
         <div>
             {results.map(({Title,Poster,imdbID})=> 
-            <Link to={`/movie/${imdbID}`} key={imdbID}><img src={Poster} alt={Title} /></Link>)}
+            <Link to={{type: "MOVIE", payload: {imdbID}}} key={imdbID}>
+                <img src={Poster} alt={Title} />
+            </Link>)}
         </div>
     </div>;
 }
@@ -49,16 +51,16 @@ const ConnectedSearch = connect(
             onSearch: (title)=> {
                 dispatch({
                     type: 'SEARCH',
-                    payload: fetch(`http://www.omdbapi.com/?apikey=8e4dcdac&s=${encodeURIComponent(title)}`)
-                            .then((response) => response.json())
+                    payload: {title}
                   });
-            }
+            } 
         };
     }
 )(Search);
 
 export const routeComponentMap = {
-    HOME: ConnectedSearch
+    HOME: ConnectedSearch,
+    SEARCH: ConnectedSearch
 };
 
 export const searchReducer = { 
@@ -74,3 +76,13 @@ export const searchReducer = {
         }
     }
 }
+
+export const searchRouteConfig = {
+    path: '/search/:title',
+    thunk: async (dispatch, getState) => {
+        const title = getState().location.payload.title;
+        const results = await fetch(`http://www.omdbapi.com/?apikey=8e4dcdac&s=${encodeURIComponent(title)}`)
+            .then((response) => response.json())
+        dispatch({ type: "SEARCH_FULFILLED", payload: results });
+    }
+};
